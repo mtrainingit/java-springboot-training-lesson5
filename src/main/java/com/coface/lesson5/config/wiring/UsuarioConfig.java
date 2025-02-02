@@ -2,8 +2,6 @@ package com.coface.lesson5.config.wiring;
 
 import com.coface.lesson5.db.dao.DummyRepository;
 import com.coface.lesson5.db.dao.UsuarioRepository;
-import com.coface.lesson5.db.dao.UsuarioSpringDataJPARepository;
-import com.coface.lesson5.db.dao.UsuarioSpringDataJPARepositoryAdapter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,15 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UsuarioConfig {
 
     @Bean
-    @Qualifier("dummy")
     public UsuarioRepository usuarioDummyRepository() {
         return new DummyRepository();
-    }
-
-    @Bean
-    @Qualifier("jpa")
-    public UsuarioRepository usuarioJPARepository(UsuarioSpringDataJPARepository usuarioSpringDataJPARepository) {
-        return new UsuarioSpringDataJPARepositoryAdapter(usuarioSpringDataJPARepository);
     }
 
     @Bean
