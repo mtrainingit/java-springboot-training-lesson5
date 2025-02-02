@@ -1,4 +1,6 @@
-package com.coface.lesson5;
+package com.coface.lesson5.db.dao;
+
+import com.coface.lesson5.db.model.Usuario;
 
 import java.util.List;
 import java.util.Optional;

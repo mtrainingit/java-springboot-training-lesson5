@@ -1,4 +1,4 @@
-package com.coface.lesson5;
+package com.coface.lesson5.exception;
 
 import java.util.Date;
 

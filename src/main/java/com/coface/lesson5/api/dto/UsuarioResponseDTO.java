@@ -1,4 +1,4 @@
-package com.coface.lesson5;
+package com.coface.lesson5.api.dto;
 
 public record UsuarioResponseDTO(
         Long id,

@@ -1,15 +1,18 @@
-package com.coface.lesson5;
+package com.coface.lesson5.service;
 
+import com.coface.lesson5.api.dto.UsuarioCreateRequestDTO;
+import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
+import com.coface.lesson5.db.dao.UsuarioRepository;
+import com.coface.lesson5.db.model.Usuario;
+import com.coface.lesson5.exception.RecursoNoEncontradoException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-class UsuarioService {
+public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 

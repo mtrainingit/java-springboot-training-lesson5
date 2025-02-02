@@ -1,4 +1,6 @@
-package com.coface.lesson5;
+package com.coface.lesson5.db.dao;
+
+import com.coface.lesson5.db.model.Usuario;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,8 +39,8 @@ public class DummyRepository implements UsuarioRepository {
             usuarios.add(usuario);
         }
         else {
-            usuarios.remove(usuarios.stream().filter(u -> u.getId() == usuario.getId()).findFirst().get());
-            usuarios.add(usuario);
+            Usuario usuarioToModify = usuarios.stream().filter(u -> u.getId() == usuario.getId()).findFirst().get();
+            usuarioToModify = usuario;
             id = usuario.getId();
         }
         return id;

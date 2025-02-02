@@ -1,6 +1,7 @@
-package com.coface.lesson5;
+package com.coface.lesson5.mapper;
 
-import org.springframework.context.annotation.Configuration;
+import com.coface.lesson5.db.model.Usuario;
+import com.coface.lesson5.api.dto.UsuarioResponseDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;

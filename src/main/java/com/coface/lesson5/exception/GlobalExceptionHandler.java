@@ -1,4 +1,4 @@
-package com.coface.lesson5;
+package com.coface.lesson5.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
