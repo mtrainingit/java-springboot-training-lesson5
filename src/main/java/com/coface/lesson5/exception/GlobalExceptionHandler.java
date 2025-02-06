@@ -17,6 +17,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(detalleDeError, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(ConflictoCampoUnicoException.class)
+    ResponseEntity<?> recursoNoEncontradoException(ConflictoCampoUnicoException exception, WebRequest request) {
+        DetalleDeError detalleDeError = new DetalleDeError(new Date(), exception.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(detalleDeError, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> cualquierException(Exception exception, WebRequest request) {
         DetalleDeError detalleDeError = new DetalleDeError(new Date(), exception.getMessage(), request.getDescription(false));

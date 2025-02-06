@@ -4,6 +4,7 @@ import com.coface.lesson5.api.dto.UsuarioCreateRequestDTO;
 import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
 import com.coface.lesson5.db.dao.UsuarioRepository;
 import com.coface.lesson5.db.model.Usuario;
+import com.coface.lesson5.exception.ConflictoCampoUnicoException;
 import com.coface.lesson5.exception.RecursoNoEncontradoException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +20,7 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
 
     public UsuarioService(
-            UsuarioRepository usuarioRepository,
+            @Qualifier("jpa") UsuarioRepository usuarioRepository,
             @Qualifier("bcrypt") PasswordEncoder passwordEncoder
     ) {
         this.usuarioRepository = usuarioRepository;
@@ -35,6 +36,9 @@ public class UsuarioService {
     }
 
     public Long crearUsusario(UsuarioCreateRequestDTO usuarioCreateRequestDTO) {
+        if (usuarioRepository.existeUsuarioPorEmail(usuarioCreateRequestDTO.email())) {
+            throw new ConflictoCampoUnicoException("El email " + usuarioCreateRequestDTO.email() + " ya existe");
+        }
         String password = passwordEncoder.encode(usuarioCreateRequestDTO.password());
         return usuarioRepository.saveUsuario(new Usuario(
                 usuarioCreateRequestDTO.nombre(),
@@ -50,6 +54,9 @@ public class UsuarioService {
             usuario.setNombre(usuarioUpdateRequestDTO.nombre());
         }
         if (usuarioUpdateRequestDTO.email() != null && !usuarioUpdateRequestDTO.email().isEmpty()) {
+            if (usuarioRepository.existeUsuarioPorEmail(usuarioUpdateRequestDTO.email())) {
+                throw new ConflictoCampoUnicoException("El email " + usuarioUpdateRequestDTO.email() + " ya existe");
+            }
             usuario.setEmail(usuarioUpdateRequestDTO.email());
         }
         return usuarioRepository.saveUsuario(usuario);

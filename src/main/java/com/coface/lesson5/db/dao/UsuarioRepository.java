@@ -1,5 +1,6 @@
 package com.coface.lesson5.db.dao;
 
+import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
 import com.coface.lesson5.db.model.Usuario;
 
 import java.util.List;
@@ -11,4 +12,6 @@ public interface UsuarioRepository {
     Optional<Usuario> getUsuarioPorId(Long id);
     Long saveUsuario(Usuario usuario);
     Long deleteUsuario(Long id);
+    boolean existeUsuarioPorId(Long id);
+    boolean existeUsuarioPorEmail(String email);
 }

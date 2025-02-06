@@ -1,5 +1,6 @@
 package com.coface.lesson5.db.dao;
 
+import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
 import com.coface.lesson5.db.model.Usuario;
 
 import java.util.ArrayList;
@@ -7,11 +8,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class DummyRepository implements UsuarioRepository {
+public class UsuarioDummyRepository implements UsuarioRepository {
 
     private List<Usuario> usuarios;
 
-    public DummyRepository() {
+    public UsuarioDummyRepository() {
         this.usuarios = new ArrayList<>(Arrays.asList(
                 new Usuario(1L, "José Luis Soto", "soto.joseluis@coface.com", "mimuysegurapassword", 1),
                 new Usuario(2L, "Jerome Prat", "prat.jerome@coface.com", "mimuysegurapassword", 2),
@@ -52,4 +53,13 @@ public class DummyRepository implements UsuarioRepository {
         return id;
     }
 
+    @Override
+    public boolean existeUsuarioPorId(Long id) {
+        return usuarios.stream().filter(u -> u.getId() == id).findFirst().isPresent();
+    }
+
+    @Override
+    public boolean existeUsuarioPorEmail(String email) {
+        return usuarios.stream().filter(u -> u.getEmail().equals(email)).findFirst().isPresent();
+    }
 }

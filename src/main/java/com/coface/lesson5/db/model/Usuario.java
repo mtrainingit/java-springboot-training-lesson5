@@ -1,12 +1,38 @@
 package com.coface.lesson5.db.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(
+        name = "usuarios",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "usuarios_email_unique",
+                        columnNames = "email"
+                )
+        }
+)
 public class Usuario {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usuarios_id_seq")
+    @SequenceGenerator(name = "usuarios_id_seq", sequenceName = "usuarios_id_seq", allocationSize = 1)
     private Long id;
+
+    @Column(name = "nombre", nullable = false)
     private String nombre;
+
+    @Column(name = "email", nullable = false)
     private String email;
+
+    @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "rol", nullable = false)
     private Integer rol;
+
+    public Usuario() {
+    }
 
     public Usuario(String nombre, String email, String password, Integer rol) {
         this.nombre = nombre;
