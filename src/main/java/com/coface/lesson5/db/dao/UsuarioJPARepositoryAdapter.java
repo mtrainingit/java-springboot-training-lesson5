@@ -1,8 +1,10 @@
 package com.coface.lesson5.db.dao;
 
-import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
 import com.coface.lesson5.db.model.Usuario;
-import jakarta.persistence.EntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +29,7 @@ public class UsuarioJPARepositoryAdapter implements UsuarioRepository {
 
     @Override
     public Long saveUsuario(Usuario usuario) {
-        return usuarioJPARepository.save(usuario).getId();
+        return usuarioJPARepository.saveAndFlush(usuario).getId();
     }
 
     @Override
@@ -44,5 +46,12 @@ public class UsuarioJPARepositoryAdapter implements UsuarioRepository {
     @Override
     public boolean existeUsuarioPorEmail(String email) {
         return usuarioJPARepository.existsByEmail(email);
+    }
+
+    @Override
+    public Page<Usuario> getUsuariosPaginados(int pagina, int tamano, String ordPor, String dirOrd) {
+        Sort sort = dirOrd.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(ordPor).ascending() : Sort.by(ordPor).descending();
+        Pageable pageable = PageRequest.of(pagina, tamano, sort);
+        return usuarioJPARepository.findAll(pageable);
     }
 }

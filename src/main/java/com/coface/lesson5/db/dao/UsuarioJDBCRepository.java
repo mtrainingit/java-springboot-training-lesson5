@@ -10,9 +10,9 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
-public class UsuarioJDBCRepository implements UsuarioRepository {
+public class UsuarioJDBCRepository  {// implements UsuarioRepository {
 
-    private final JdbcTemplate jdbcTemplate;
+    /* private final JdbcTemplate jdbcTemplate;
 
     public UsuarioJDBCRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -110,5 +110,5 @@ public class UsuarioJDBCRepository implements UsuarioRepository {
                 email
         );
         return count != null && count > 0;
-    }
+    } */
 }

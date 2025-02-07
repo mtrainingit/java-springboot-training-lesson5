@@ -15,7 +15,9 @@ public class UsuarioAUsuarioResponseDTOMapper implements Function<Usuario, Usuar
                 usuario.getId(),
                 usuario.getNombre(),
                 usuario.getEmail(),
-                usuario.getRol() == 1 ? "ROLE_ADMIN" : "ROLE_USER"
+                usuario.getRol() == 1 ? "ROLE_ADMIN" : "ROLE_USER",
+                usuario.getDireccion(),
+                usuario.getTareas()
         );
     }
 }

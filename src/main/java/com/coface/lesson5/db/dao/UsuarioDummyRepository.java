@@ -1,23 +1,19 @@
 package com.coface.lesson5.db.dao;
 
-import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
 import com.coface.lesson5.db.model.Usuario;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class UsuarioDummyRepository implements UsuarioRepository {
+public class UsuarioDummyRepository { // implements UsuarioRepository {
 
-    private List<Usuario> usuarios;
+    /* private List<Usuario> usuarios;
 
     public UsuarioDummyRepository() {
-        this.usuarios = new ArrayList<>(Arrays.asList(
-                new Usuario(1L, "José Luis Soto", "soto.joseluis@coface.com", "mimuysegurapassword", 1),
-                new Usuario(2L, "Jerome Prat", "prat.jerome@coface.com", "mimuysegurapassword", 2),
-                new Usuario(3L, "Raúl González", "gonzalez.raul@coface.com", "mimuysegurapassword", 2)
-        ));
+        this.usuarios = new ArrayList<>();
     }
 
     @Override
@@ -61,5 +57,6 @@ public class UsuarioDummyRepository implements UsuarioRepository {
     @Override
     public boolean existeUsuarioPorEmail(String email) {
         return usuarios.stream().filter(u -> u.getEmail().equals(email)).findFirst().isPresent();
-    }
+    } */
+
 }

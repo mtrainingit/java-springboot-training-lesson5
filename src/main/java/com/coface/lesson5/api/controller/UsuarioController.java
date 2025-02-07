@@ -1,10 +1,12 @@
 package com.coface.lesson5.api.controller;
 
+import com.coface.lesson5.db.model.Usuario;
 import com.coface.lesson5.mapper.UsuarioAUsuarioResponseDTOMapper;
 import com.coface.lesson5.api.dto.UsuarioCreateRequestDTO;
 import com.coface.lesson5.api.dto.UsuarioResponseDTO;
 import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
 import com.coface.lesson5.service.UsuarioService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +49,16 @@ public class UsuarioController {
     @DeleteMapping("{id}")
     public ResponseEntity<Long> deleteUsuario(@PathVariable Long id) {
         return new ResponseEntity<>(usuarioService.eliminarUsuario(id), HttpStatus.OK);
+    }
+
+    @GetMapping("paginado")
+    public Page<UsuarioResponseDTO> getUsuariosPaginados(
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamano,
+            @RequestParam(defaultValue = "nombre") String ordPor,
+            @RequestParam(defaultValue = "asc") String dirOrd
+    ) {
+        return usuarioService.getUsuariosPaginados(pagina, tamano, ordPor, dirOrd).map(usuarioResponseDTOMapper);
     }
 
 }

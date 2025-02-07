@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class UsuarioConfig {
 
-    @Bean
+    /* @Bean
     @Qualifier("dummy")
     public UsuarioRepository usuarioDummyRepository() {
         return new UsuarioDummyRepository();
@@ -22,7 +22,7 @@ public class UsuarioConfig {
     @Qualifier("jdbc")
     public UsuarioRepository usuarioJDBCRepository(JdbcTemplate jdbcTemplate) {
         return new UsuarioJDBCRepository(jdbcTemplate);
-    }
+    } */
 
     @Bean
     @Qualifier("jpa")

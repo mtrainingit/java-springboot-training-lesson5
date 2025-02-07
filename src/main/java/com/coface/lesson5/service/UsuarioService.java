@@ -1,14 +1,20 @@
 package com.coface.lesson5.service;
 
 import com.coface.lesson5.api.dto.UsuarioCreateRequestDTO;
+import com.coface.lesson5.api.dto.UsuarioResponseDTO;
 import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
 import com.coface.lesson5.db.dao.UsuarioRepository;
+import com.coface.lesson5.db.model.Direccion;
 import com.coface.lesson5.db.model.Usuario;
 import com.coface.lesson5.exception.ConflictoCampoUnicoException;
 import com.coface.lesson5.exception.RecursoNoEncontradoException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.util.List;
 
@@ -35,6 +41,7 @@ public class UsuarioService {
         return usuarioRepository.getUsuarioPorId(id).orElseThrow(() -> new RecursoNoEncontradoException("No se pudo encontrar un usuario con el id " + id));
     }
 
+    @Transactional
     public Long crearUsusario(UsuarioCreateRequestDTO usuarioCreateRequestDTO) {
         if (usuarioRepository.existeUsuarioPorEmail(usuarioCreateRequestDTO.email())) {
             throw new ConflictoCampoUnicoException("El email " + usuarioCreateRequestDTO.email() + " ya existe");
@@ -44,7 +51,11 @@ public class UsuarioService {
                 usuarioCreateRequestDTO.nombre(),
                 usuarioCreateRequestDTO.email(),
                 password,
-                2
+                2,
+                new Direccion(
+                        usuarioCreateRequestDTO.direccion(),
+                        usuarioCreateRequestDTO.codigoPostal()
+                )
         ));
     }
 
@@ -65,5 +76,9 @@ public class UsuarioService {
     public Long eliminarUsuario(Long id) {
         Usuario usuario = usuarioRepository.getUsuarioPorId(id).orElseThrow(() -> new RecursoNoEncontradoException("No se pudo encontrar un usuario con id " + id));
         return usuarioRepository.deleteUsuario(id);
+    }
+
+    public Page<Usuario> getUsuariosPaginados(int pagina, int tamano, String ordPor, String dirOrd) {
+        return usuarioRepository.getUsuariosPaginados(pagina, tamano, ordPor, dirOrd);
     }
 }

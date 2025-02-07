@@ -2,6 +2,8 @@ package com.coface.lesson5.db.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(
         name = "usuarios",
@@ -31,22 +33,30 @@ public class Usuario {
     @Column(name = "rol", nullable = false)
     private Integer rol;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Direccion direccion;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Tarea> tareas;
+
     public Usuario() {
     }
 
-    public Usuario(String nombre, String email, String password, Integer rol) {
-        this.nombre = nombre;
-        this.email = email;
-        this.password = password;
-        this.rol = rol;
-    }
-
-    public Usuario(Long id, String nombre, String email, String password, Integer rol) {
+    public Usuario(Long id, String nombre, String email, String password, Integer rol, Direccion direccion) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
         this.password = password;
         this.rol = rol;
+        this.direccion = direccion;
+    }
+
+    public Usuario(String nombre, String email, String password, Integer rol, Direccion direccion) {
+        this.nombre = nombre;
+        this.email = email;
+        this.password = password;
+        this.rol = rol;
+        this.direccion = direccion;
     }
 
     public Long getId() {
@@ -87,6 +97,18 @@ public class Usuario {
 
     public void setRol(Integer rol) {
         this.rol = rol;
+    }
+
+    public Direccion getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(Direccion direccion) {
+        this.direccion = direccion;
+    }
+
+    public List<Tarea> getTareas() {
+        return tareas;
     }
 
     @Override
