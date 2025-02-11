@@ -21,9 +21,31 @@ public class Tarea {
     private String descripcion;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(
+            name = "usuario_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(
+                    name = "usuario_tarea_fk"
+            )
+    )
     @JsonIgnore
     private Usuario usuario;
+
+    public Tarea() {
+    }
+
+    public Tarea(Long id, String nombre, String descripcion, Usuario usuario) {
+        this.id = id;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.usuario = usuario;
+    }
+
+    public Tarea(String nombre, String descripcion, Usuario usuario) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.usuario = usuario;
+    }
 
     public Long getId() {
         return id;
@@ -49,8 +71,14 @@ public class Tarea {
         this.descripcion = descripcion;
     }
 
+    @JsonIgnore
     public String getUsuario() {
         return usuario.getNombre();
+    }
+
+    @JsonIgnore
+    public Long getUsuarioId() {
+        return usuario.getId();
     }
 
     public void setUsuario(Usuario usuario) {

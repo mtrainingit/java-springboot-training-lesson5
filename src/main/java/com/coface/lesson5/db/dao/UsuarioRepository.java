@@ -10,7 +10,7 @@ public interface UsuarioRepository {
 
     List<Usuario> getUsuarios();
     Optional<Usuario> getUsuarioPorId(Long id);
-    Long saveUsuario(Usuario usuario);
+    Usuario saveUsuario(Usuario usuario);
     Long deleteUsuario(Long id);
     boolean existeUsuarioPorId(Long id);
     boolean existeUsuarioPorEmail(String email);

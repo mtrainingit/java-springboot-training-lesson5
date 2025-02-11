@@ -9,6 +9,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.Md4PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.sql.DataSource;
+
 @Configuration
 public class UsuarioConfig {
 
@@ -16,13 +18,13 @@ public class UsuarioConfig {
     @Qualifier("dummy")
     public UsuarioRepository usuarioDummyRepository() {
         return new UsuarioDummyRepository();
-    }
+    } */
 
     @Bean
     @Qualifier("jdbc")
-    public UsuarioRepository usuarioJDBCRepository(JdbcTemplate jdbcTemplate) {
-        return new UsuarioJDBCRepository(jdbcTemplate);
-    } */
+    public UsuarioRepository usuarioJDBCRepository(JdbcTemplate jdbcTemplate, DireccionJDBCRepository direccionJDBCRepository, TareaJDBCRepository tareaJDBCRepository) {
+        return new UsuarioJDBCRepository(jdbcTemplate, direccionJDBCRepository, tareaJDBCRepository);
+    }
 
     @Bean
     @Qualifier("jpa")

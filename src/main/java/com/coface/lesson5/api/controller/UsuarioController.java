@@ -1,12 +1,12 @@
 package com.coface.lesson5.api.controller;
 
-import com.coface.lesson5.db.model.Usuario;
+import com.coface.lesson5.db.model.Tarea;
 import com.coface.lesson5.mapper.UsuarioAUsuarioResponseDTOMapper;
 import com.coface.lesson5.api.dto.UsuarioCreateRequestDTO;
 import com.coface.lesson5.api.dto.UsuarioResponseDTO;
 import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
 import com.coface.lesson5.service.UsuarioService;
-import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,13 +52,22 @@ public class UsuarioController {
     }
 
     @GetMapping("paginado")
-    public Page<UsuarioResponseDTO> getUsuariosPaginados(
+    public PagedModel<UsuarioResponseDTO> getUsuariosPaginados(
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamano,
             @RequestParam(defaultValue = "nombre") String ordPor,
             @RequestParam(defaultValue = "asc") String dirOrd
     ) {
-        return usuarioService.getUsuariosPaginados(pagina, tamano, ordPor, dirOrd).map(usuarioResponseDTOMapper);
+        return new PagedModel<>(usuarioService.getUsuariosPaginados(pagina, tamano, ordPor, dirOrd).map(usuarioResponseDTOMapper));
     }
 
+    @PutMapping("{id}/tarea")
+    public Long asignarTarea(@PathVariable Long id, @RequestBody Tarea tarea) {
+        return usuarioService.asignarTarea(id, tarea);
+    }
+
+    @GetMapping("{id}/tarea")
+    public UsuarioResponseDTO getTareasDeUsuario(@PathVariable Long id) {
+        return usuarioResponseDTOMapper.apply(usuarioService.getTareasDeUsuario(id));
+    }
 }

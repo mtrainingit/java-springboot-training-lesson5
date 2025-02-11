@@ -2,6 +2,7 @@ package com.coface.lesson5.db.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,30 +34,38 @@ public class Usuario {
     @Column(name = "rol", nullable = false)
     private Integer rol;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(
+            mappedBy = "usuario",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.EAGER
+    )
     private Direccion direccion;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Tarea> tareas;
+    @OneToMany(
+            mappedBy = "usuario",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY
+    )
+    private List<Tarea> tareas = new ArrayList<>();
 
     public Usuario() {
     }
 
-    public Usuario(Long id, String nombre, String email, String password, Integer rol, Direccion direccion) {
+    public Usuario(Long id, String nombre, String email, String password, Integer rol) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
         this.password = password;
         this.rol = rol;
-        this.direccion = direccion;
     }
 
-    public Usuario(String nombre, String email, String password, Integer rol, Direccion direccion) {
+    public Usuario(String nombre, String email, String password, Integer rol) {
         this.nombre = nombre;
         this.email = email;
         this.password = password;
         this.rol = rol;
-        this.direccion = direccion;
     }
 
     public Long getId() {
@@ -111,6 +120,16 @@ public class Usuario {
         return tareas;
     }
 
+    public void setTareas(List<Tarea> tareas) {
+        this.tareas = tareas;
+    }
+
+    public void asignaTarea(Tarea tarea) {
+        if (!tareas.contains(tarea)) {
+            tareas.add(tarea);
+        }
+    }
+
     @Override
     public String toString() {
         return "Usuario{" +
@@ -121,4 +140,5 @@ public class Usuario {
                 ", rol=" + rol +
                 '}';
     }
+
 }

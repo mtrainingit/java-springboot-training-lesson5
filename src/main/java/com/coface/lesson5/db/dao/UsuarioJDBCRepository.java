@@ -1,7 +1,10 @@
 package com.coface.lesson5.db.dao;
 
-import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
+import com.coface.lesson5.db.model.Direccion;
+import com.coface.lesson5.db.model.Tarea;
 import com.coface.lesson5.db.model.Usuario;
+import jakarta.transaction.Transactional;
+import org.springframework.data.domain.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -10,17 +13,23 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
-public class UsuarioJDBCRepository  {// implements UsuarioRepository {
+public class UsuarioJDBCRepository implements UsuarioRepository {
 
-    /* private final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    public UsuarioJDBCRepository(JdbcTemplate jdbcTemplate) {
+    private final DireccionJDBCRepository direccionJDBCRepository;
+
+    private final TareaJDBCRepository tareaJDBCRepository;
+
+    public UsuarioJDBCRepository(JdbcTemplate jdbcTemplate, DireccionJDBCRepository direccionJDBCRepository, TareaJDBCRepository tareaJDBCRepository) {
         this.jdbcTemplate = jdbcTemplate;
+        this.direccionJDBCRepository = direccionJDBCRepository;
+        this.tareaJDBCRepository = tareaJDBCRepository;
     }
 
     @Override
     public List<Usuario> getUsuarios() {
-        return jdbcTemplate.query(
+        List<Usuario> usuarios = jdbcTemplate.query(
                 "select * from usuarios",
                 (result, rownum) -> new Usuario(
                         result.getLong("id"),
@@ -30,12 +39,33 @@ public class UsuarioJDBCRepository  {// implements UsuarioRepository {
                         result.getInt("rol")
                 )
         );
+        usuarios.stream().forEach(i -> {
+            Direccion direccion;
+            try {
+                direccion = jdbcTemplate.queryForObject(
+                        "select * from direcciones where usuario_id = ?",
+                        (result, rownum) -> new Direccion(
+                                result.getLong("id"),
+                                result.getString("direccion"),
+                                result.getString("codigo_postal"),
+                                i
+                        ),
+                        i.getId()
+                );
+            }
+            catch (Exception excepcion) {
+                direccion = null;
+            }
+            i.setDireccion(direccion);
+        });
+        return usuarios;
     }
 
     @Override
     public Optional<Usuario> getUsuarioPorId(Long id) {
+        Optional<Usuario> usuario;
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
+            usuario = Optional.ofNullable(jdbcTemplate.queryForObject(
                     "select * from usuarios where id = ?",
                     (result, rownum) -> new Usuario(
                             result.getLong("id"),
@@ -48,12 +78,33 @@ public class UsuarioJDBCRepository  {// implements UsuarioRepository {
             ));
         }
         catch (Exception e) {
-            return Optional.empty();
+            usuario = Optional.empty();
         }
+        usuario.ifPresent(i -> {
+            Direccion direccion;
+            try {
+                direccion = jdbcTemplate.queryForObject(
+                        "select * from direcciones where usuario_id = ?",
+                        (result, rownum) -> new Direccion(
+                                result.getLong("id"),
+                                result.getString("direccion"),
+                                result.getString("codigo_postal"),
+                                i
+                        ),
+                        i.getId()
+                );
+            }
+            catch (Exception excepcion) {
+                direccion = null;
+            }
+            i.setDireccion(direccion);
+        });
+        return usuario;
     }
 
+    @Transactional
     @Override
-    public Long saveUsuario(Usuario usuario) {
+    public Usuario saveUsuario(Usuario usuario) {
         if (usuario.getId() == null) {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(
@@ -70,21 +121,30 @@ public class UsuarioJDBCRepository  {// implements UsuarioRepository {
                     },
                     keyHolder
             );
-            return keyHolder.getKey().longValue();
+            Long id = keyHolder.getKey().longValue();
+            usuario.setId(id);
+            return usuario;
         }
         else {
+            direccionJDBCRepository.saveDireccion(usuario.getDireccion());
             jdbcTemplate.update(
                     "update usuarios set nombre = ?, email = ? where id = ?",
                     usuario.getNombre(),
                     usuario.getEmail(),
                     usuario.getId()
             );
-            return usuario.getId();
+            for (Tarea tarea : usuario.getTareas()) {
+                tareaJDBCRepository.saveTarea(tarea);
+            }
+            return usuario;
         }
     }
 
+    @Transactional
     @Override
     public Long deleteUsuario(Long id) {
+        tareaJDBCRepository.deleteTareasPorUsuarioId(id);
+        direccionJDBCRepository.deleteDireccionPorUsuarioId(id);
         jdbcTemplate.update(
                 "delete from usuarios where id = ?",
                 id
@@ -110,5 +170,63 @@ public class UsuarioJDBCRepository  {// implements UsuarioRepository {
                 email
         );
         return count != null && count > 0;
-    } */
+    }
+
+    @Override
+    public Page<Usuario> getUsuariosPaginados(int pagina, int tamano, String ordPor, String dirOrd) {
+        Sort sort = dirOrd.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(ordPor).ascending() : Sort.by(ordPor).descending();
+        Pageable pageable = PageRequest.of(pagina, tamano, sort);
+        int offset = (int) pageable.getOffset();
+        String orderBy;
+        if (sort.isUnsorted()) {
+            orderBy = "";
+        }
+        else {
+            StringBuilder orderByBuilder = new StringBuilder(" order by ");
+            sort.forEach(i -> {
+                orderByBuilder
+                        .append(i.getProperty())
+                        .append(" ")
+                        .append(i.isAscending() ? "asc" : "desc")
+                        .append(", ");
+            });
+            orderBy = orderByBuilder.substring(0, orderByBuilder.length() - 2);
+        }
+        List<Usuario> usuarios = jdbcTemplate.query(
+                "select * from usuarios " + orderBy + " offset ? rows fetch next ? rows only",
+                (result, rownum) -> new Usuario(
+                        result.getLong("id"),
+                        result.getString("nombre"),
+                        result.getString("email"),
+                        result.getString("password"),
+                        result.getInt("rol")
+                ),
+                offset,
+                tamano
+        );
+        usuarios.stream().forEach(i -> {
+            Direccion direccion;
+            try {
+                direccion = jdbcTemplate.queryForObject(
+                        "select * from direcciones where usuario_id = ?",
+                        (result, rownum) -> new Direccion(
+                                result.getLong("id"),
+                                result.getString("direccion"),
+                                result.getString("codigo_postal"),
+                                i
+                        ),
+                        i.getId()
+                );
+            }
+            catch (Exception excepcion) {
+                direccion = null;
+            }
+            i.setDireccion(direccion);
+        });
+        Long count = jdbcTemplate.queryForObject(
+                "select count(*) from usuarios",
+                Long.class
+        );
+        return new PageImpl<>(usuarios, pageable, count);
+    }
 }

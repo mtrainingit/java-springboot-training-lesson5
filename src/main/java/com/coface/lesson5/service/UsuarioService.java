@@ -3,18 +3,20 @@ package com.coface.lesson5.service;
 import com.coface.lesson5.api.dto.UsuarioCreateRequestDTO;
 import com.coface.lesson5.api.dto.UsuarioResponseDTO;
 import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
+import com.coface.lesson5.db.dao.TareaJDBCRepository;
+import com.coface.lesson5.db.dao.TareaRepository;
 import com.coface.lesson5.db.dao.UsuarioRepository;
 import com.coface.lesson5.db.model.Direccion;
+import com.coface.lesson5.db.model.Tarea;
 import com.coface.lesson5.db.model.Usuario;
 import com.coface.lesson5.exception.ConflictoCampoUnicoException;
 import com.coface.lesson5.exception.RecursoNoEncontradoException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 
 import java.util.List;
 
@@ -25,12 +27,16 @@ public class UsuarioService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final TareaRepository tareaRepository;
+
     public UsuarioService(
-            @Qualifier("jpa") UsuarioRepository usuarioRepository,
+            @Qualifier("jdbc") UsuarioRepository usuarioRepository,
+            TareaRepository tareaRepository,
             @Qualifier("bcrypt") PasswordEncoder passwordEncoder
     ) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.tareaRepository = tareaRepository;
     }
 
     public List<Usuario> getUsuarios() {
@@ -47,16 +53,19 @@ public class UsuarioService {
             throw new ConflictoCampoUnicoException("El email " + usuarioCreateRequestDTO.email() + " ya existe");
         }
         String password = passwordEncoder.encode(usuarioCreateRequestDTO.password());
-        return usuarioRepository.saveUsuario(new Usuario(
+        Usuario usuario = usuarioRepository.saveUsuario(new Usuario(
                 usuarioCreateRequestDTO.nombre(),
                 usuarioCreateRequestDTO.email(),
                 password,
-                2,
-                new Direccion(
-                        usuarioCreateRequestDTO.direccion(),
-                        usuarioCreateRequestDTO.codigoPostal()
-                )
+                2
         ));
+        usuario.setDireccion(new Direccion(
+                usuarioCreateRequestDTO.direccion(),
+                usuarioCreateRequestDTO.codigoPostal(),
+                usuario
+        ));
+        usuarioRepository.saveUsuario(usuario);
+        return usuario.getId();
     }
 
     public Long actualizarUsuario(Long id, UsuarioUpdateRequestDTO usuarioUpdateRequestDTO) {
@@ -70,7 +79,7 @@ public class UsuarioService {
             }
             usuario.setEmail(usuarioUpdateRequestDTO.email());
         }
-        return usuarioRepository.saveUsuario(usuario);
+        return usuarioRepository.saveUsuario(usuario).getId();
     }
 
     public Long eliminarUsuario(Long id) {
@@ -80,5 +89,18 @@ public class UsuarioService {
 
     public Page<Usuario> getUsuariosPaginados(int pagina, int tamano, String ordPor, String dirOrd) {
         return usuarioRepository.getUsuariosPaginados(pagina, tamano, ordPor, dirOrd);
+    }
+
+    public Long asignarTarea(Long id, Tarea tarea) {
+        Usuario usuario = usuarioRepository.getUsuarioPorId(id).orElseThrow(() -> new RecursoNoEncontradoException("No se pudo encontrar un usuario con id " + id));
+        tarea.setUsuario(usuario);
+        usuario.asignaTarea(tarea);
+        return usuarioRepository.saveUsuario(usuario).getId();
+    }
+
+    public Usuario getTareasDeUsuario(Long id) {
+        Usuario usuario = usuarioRepository.getUsuarioPorId(id).orElseThrow(() -> new RecursoNoEncontradoException("No se pudo encontrar un usuario con id " + id));
+        usuario.setTareas(tareaRepository.encontrarTareasPorUsuario(usuario));
+        return usuario;
     }
 }

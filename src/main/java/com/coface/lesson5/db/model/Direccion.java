@@ -1,5 +1,6 @@
 package com.coface.lesson5.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,7 +11,7 @@ public class Direccion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "direcciones_id_seq")
-    @SequenceGenerator(name = "direcciones_id_seq", sequenceName = "direcciones_id_seq")
+    @SequenceGenerator(name = "direcciones_id_seq", sequenceName = "direcciones_id_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "direccion", nullable = false)
@@ -19,18 +20,31 @@ public class Direccion {
     @Column(name = "codigo_postal", nullable = false)
     private String codigoPostal;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(
+            name = "usuario_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(
+                    name = "usuario_direccion_fk"
+            )
+    )
+    @JsonIgnore
+    private Usuario usuario;
+
     public Direccion() {
     }
 
-    public Direccion(Long id, String direccion, String codigoPostal) {
+    public Direccion(Long id, String direccion, String codigoPostal, Usuario usuario) {
         this.id = id;
         this.direccion = direccion;
         this.codigoPostal = codigoPostal;
+        this.usuario = usuario;
     }
 
-    public Direccion(String direccion, String codigoPostal) {
+    public Direccion(String direccion, String codigoPostal, Usuario usuario) {
         this.direccion = direccion;
         this.codigoPostal = codigoPostal;
+        this.usuario = usuario;
     }
 
     public Long getId() {
@@ -55,6 +69,15 @@ public class Direccion {
 
     public void setCodigoPostal(String codigoPostal) {
         this.codigoPostal = codigoPostal;
+    }
+
+    @JsonIgnore
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     @Override

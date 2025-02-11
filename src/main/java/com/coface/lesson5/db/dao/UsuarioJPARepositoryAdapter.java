@@ -28,8 +28,8 @@ public class UsuarioJPARepositoryAdapter implements UsuarioRepository {
     }
 
     @Override
-    public Long saveUsuario(Usuario usuario) {
-        return usuarioJPARepository.saveAndFlush(usuario).getId();
+    public Usuario saveUsuario(Usuario usuario) {
+        return usuarioJPARepository.save(usuario);
     }
 
     @Override
