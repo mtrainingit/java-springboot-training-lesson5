@@ -17,14 +17,18 @@ public class UsuarioJDBCRepository implements UsuarioRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final DireccionJDBCRepository direccionJDBCRepository;
+    private final DireccionRepository direccionRepository;
 
-    private final TareaJDBCRepository tareaJDBCRepository;
+    private final TareaRepository tareaRepository;
 
-    public UsuarioJDBCRepository(JdbcTemplate jdbcTemplate, DireccionJDBCRepository direccionJDBCRepository, TareaJDBCRepository tareaJDBCRepository) {
+    public UsuarioJDBCRepository(
+            JdbcTemplate jdbcTemplate,
+            DireccionRepository direccionRepository,
+            TareaRepository tareaRepository
+    ) {
         this.jdbcTemplate = jdbcTemplate;
-        this.direccionJDBCRepository = direccionJDBCRepository;
-        this.tareaJDBCRepository = tareaJDBCRepository;
+        this.direccionRepository = direccionRepository;
+        this.tareaRepository = tareaRepository;
     }
 
     @Override
@@ -126,7 +130,7 @@ public class UsuarioJDBCRepository implements UsuarioRepository {
             return usuario;
         }
         else {
-            direccionJDBCRepository.saveDireccion(usuario.getDireccion());
+            direccionRepository.saveDireccion(usuario.getDireccion());
             jdbcTemplate.update(
                     "update usuarios set nombre = ?, email = ? where id = ?",
                     usuario.getNombre(),
@@ -134,7 +138,7 @@ public class UsuarioJDBCRepository implements UsuarioRepository {
                     usuario.getId()
             );
             for (Tarea tarea : usuario.getTareas()) {
-                tareaJDBCRepository.saveTarea(tarea);
+                tareaRepository.saveTarea(tarea);
             }
             return usuario;
         }
@@ -143,8 +147,8 @@ public class UsuarioJDBCRepository implements UsuarioRepository {
     @Transactional
     @Override
     public Long deleteUsuario(Long id) {
-        tareaJDBCRepository.deleteTareasPorUsuarioId(id);
-        direccionJDBCRepository.deleteDireccionPorUsuarioId(id);
+        tareaRepository.deleteTareasPorUsuarioId(id);
+        direccionRepository.deleteDireccionPorUsuarioId(id);
         jdbcTemplate.update(
                 "delete from usuarios where id = ?",
                 id
