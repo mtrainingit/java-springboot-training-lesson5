@@ -1,10 +1,7 @@
 package com.coface.lesson5.service;
 
 import com.coface.lesson5.api.dto.UsuarioCreateRequestDTO;
-import com.coface.lesson5.api.dto.UsuarioResponseDTO;
 import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
-import com.coface.lesson5.db.dao.TareaJDBCRepository;
-import com.coface.lesson5.db.dao.TareaRepository;
 import com.coface.lesson5.db.dao.UsuarioRepository;
 import com.coface.lesson5.db.model.Direccion;
 import com.coface.lesson5.db.model.Tarea;
@@ -14,7 +11,6 @@ import com.coface.lesson5.exception.RecursoNoEncontradoException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,16 +23,12 @@ public class UsuarioService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final TareaRepository tareaRepository;
-
     public UsuarioService(
-            @Qualifier("jdbc") UsuarioRepository usuarioRepository,
-            TareaRepository tareaRepository,
+            @Qualifier("usuario-jpa") UsuarioRepository usuarioRepository,
             @Qualifier("bcrypt") PasswordEncoder passwordEncoder
     ) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
-        this.tareaRepository = tareaRepository;
     }
 
     public List<Usuario> getUsuarios() {
@@ -68,6 +60,7 @@ public class UsuarioService {
         return usuario.getId();
     }
 
+    @Transactional
     public Long actualizarUsuario(Long id, UsuarioUpdateRequestDTO usuarioUpdateRequestDTO) {
         Usuario usuario = usuarioRepository.getUsuarioPorId(id).orElseThrow(() -> new RecursoNoEncontradoException("No se pudo encontrar un usuario con id " + id));
         if (usuarioUpdateRequestDTO.nombre() != null && !usuarioUpdateRequestDTO.nombre().isEmpty()) {
@@ -82,6 +75,7 @@ public class UsuarioService {
         return usuarioRepository.saveUsuario(usuario).getId();
     }
 
+    @Transactional
     public Long eliminarUsuario(Long id) {
         Usuario usuario = usuarioRepository.getUsuarioPorId(id).orElseThrow(() -> new RecursoNoEncontradoException("No se pudo encontrar un usuario con id " + id));
         return usuarioRepository.deleteUsuario(id);
@@ -91,16 +85,19 @@ public class UsuarioService {
         return usuarioRepository.getUsuariosPaginados(pagina, tamano, ordPor, dirOrd);
     }
 
+    @Transactional
     public Long asignarTarea(Long id, Tarea tarea) {
         Usuario usuario = usuarioRepository.getUsuarioPorId(id).orElseThrow(() -> new RecursoNoEncontradoException("No se pudo encontrar un usuario con id " + id));
+        usuario.setTareas(usuarioRepository.encontrarTareasPorUsuario(usuario));
         tarea.setUsuario(usuario);
         usuario.asignaTarea(tarea);
         return usuarioRepository.saveUsuario(usuario).getId();
     }
 
+    @Transactional
     public Usuario getTareasDeUsuario(Long id) {
         Usuario usuario = usuarioRepository.getUsuarioPorId(id).orElseThrow(() -> new RecursoNoEncontradoException("No se pudo encontrar un usuario con id " + id));
-        usuario.setTareas(tareaRepository.encontrarTareasPorUsuario(usuario));
+        usuario.setTareas(usuarioRepository.encontrarTareasPorUsuario(usuario));
         return usuario;
     }
 }

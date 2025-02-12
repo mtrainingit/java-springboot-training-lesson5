@@ -1,5 +1,6 @@
 package com.coface.lesson5.db.dao;
 
+import com.coface.lesson5.db.model.Tarea;
 import com.coface.lesson5.db.model.Usuario;
 import org.springframework.data.domain.Page;
 
@@ -16,4 +17,6 @@ public interface UsuarioRepository {
     boolean existeUsuarioPorEmail(String email);
 
     Page<Usuario> getUsuariosPaginados(int pagina, int tamano, String ordPor, String dirOrd);
+
+    List<Tarea> encontrarTareasPorUsuario(Usuario usuario);
 }

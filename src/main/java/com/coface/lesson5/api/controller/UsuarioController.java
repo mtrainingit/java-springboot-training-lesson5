@@ -63,7 +63,8 @@ public class UsuarioController {
 
     @PutMapping("{id}/tarea")
     public Long asignarTarea(@PathVariable Long id, @RequestBody Tarea tarea) {
-        return usuarioService.asignarTarea(id, tarea);
+        usuarioService.asignarTarea(id, tarea);
+        return id;
     }
 
     @GetMapping("{id}/tarea")

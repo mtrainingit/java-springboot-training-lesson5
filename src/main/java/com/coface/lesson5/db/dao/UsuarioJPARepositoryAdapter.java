@@ -1,6 +1,8 @@
 package com.coface.lesson5.db.dao;
 
+import com.coface.lesson5.db.model.Tarea;
 import com.coface.lesson5.db.model.Usuario;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,11 +29,13 @@ public class UsuarioJPARepositoryAdapter implements UsuarioRepository {
         return usuarioJPARepository.findById(id);
     }
 
+    @Transactional
     @Override
     public Usuario saveUsuario(Usuario usuario) {
         return usuarioJPARepository.save(usuario);
     }
 
+    @Transactional
     @Override
     public Long deleteUsuario(Long id) {
         usuarioJPARepository.deleteById(id);
@@ -53,5 +57,11 @@ public class UsuarioJPARepositoryAdapter implements UsuarioRepository {
         Sort sort = dirOrd.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(ordPor).ascending() : Sort.by(ordPor).descending();
         Pageable pageable = PageRequest.of(pagina, tamano, sort);
         return usuarioJPARepository.findAll(pageable);
+    }
+
+    @Transactional
+    @Override
+    public List<Tarea> encontrarTareasPorUsuario(Usuario usuario) {
+        return usuario.getTareas();
     }
 }

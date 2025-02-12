@@ -9,38 +9,67 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.Md4PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.sql.DataSource;
-
 @Configuration
 public class UsuarioConfig {
 
-    /* @Bean
-    @Qualifier("dummy")
-    public UsuarioRepository usuarioDummyRepository() {
-        return new UsuarioDummyRepository();
-    } */
-
     @Bean
-    @Qualifier("jdbc")
-    public UsuarioRepository usuarioJDBCRepository(JdbcTemplate jdbcTemplate, DireccionJDBCRepository direccionJDBCRepository, TareaJDBCRepository tareaJDBCRepository) {
-        return new UsuarioJDBCRepository(jdbcTemplate, direccionJDBCRepository, tareaJDBCRepository);
+    @Qualifier("direccion-dummy")
+    public DireccionRepository getDireccionDummyRepository() {
+        return new DireccionDummyRepository();
     }
 
     @Bean
-    @Qualifier("jpa")
-    public UsuarioRepository usuarioJPARepositoryAdapter(UsuarioJPARepository usuarioJPARepository) {
+    @Qualifier("tarea-dummy")
+    public TareaRepository getTareaDummyRepository() {
+        return new TareaDummyRepository();
+    }
+
+    @Bean
+    @Qualifier("usuario-dummy")
+    public UsuarioRepository getUsuarioDummyRepository(
+            @Qualifier("direccion-dummy") DireccionRepository direccionRepository,
+            @Qualifier("tarea-dummy") TareaRepository tareaRepository
+    ) {
+        return new UsuarioDummyRepository(direccionRepository, tareaRepository);
+    }
+
+    @Bean
+    @Qualifier("direccion-jdbc")
+    public DireccionRepository getDireccionJDBCRepository(JdbcTemplate jdbcTemplate) {
+        return new DireccionJDBCRepository(jdbcTemplate);
+    }
+
+    @Bean
+    @Qualifier("tarea-jdbc")
+    public TareaRepository getTareaJDBCRepository(JdbcTemplate jdbcTemplate) {
+        return new TareaJDBCRepository(jdbcTemplate);
+    }
+
+    @Bean
+    @Qualifier("usuario-jdbc")
+    public UsuarioRepository getUsuarioJDBCRepository(
+            JdbcTemplate jdbcTemplate,
+            @Qualifier("direccion-jdbc") DireccionRepository direccionRepository,
+            @Qualifier("tarea-jdbc") TareaRepository tareaRepository
+    ) {
+        return new UsuarioJDBCRepository(jdbcTemplate, direccionRepository, tareaRepository);
+    }
+
+    @Bean
+    @Qualifier("usuario-jpa")
+    public UsuarioRepository getUsuarioJPARepositoryAdapter(UsuarioJPARepository usuarioJPARepository) {
         return new UsuarioJPARepositoryAdapter(usuarioJPARepository);
     }
 
     @Bean
     @Qualifier("bcrypt")
-    public PasswordEncoder passwordBCryptEncoder() {
+    public PasswordEncoder getPasswordBCryptEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     @Qualifier("md4")
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder getPasswordEncoder() {
         return new Md4PasswordEncoder();
     }
 }

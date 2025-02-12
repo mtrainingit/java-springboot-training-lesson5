@@ -47,6 +47,11 @@ public class Tarea {
         this.usuario = usuario;
     }
 
+    public Tarea(String nombre, String descripcion) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+    }
+
     public Long getId() {
         return id;
     }
@@ -91,7 +96,6 @@ public class Tarea {
                 "id=" + id +
                 ", nombre='" + nombre + '\'' +
                 ", descripcion='" + descripcion + '\'' +
-                ", usuario=" + usuario.getNombre() +
                 '}';
     }
 }

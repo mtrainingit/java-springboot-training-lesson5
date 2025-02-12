@@ -233,4 +233,9 @@ public class UsuarioJDBCRepository implements UsuarioRepository {
         );
         return new PageImpl<>(usuarios, pageable, count);
     }
+
+    @Override
+    public List<Tarea> encontrarTareasPorUsuario(Usuario usuario) {
+        return tareaRepository.encontrarTareasPorUsuario(usuario);
+    }
 }

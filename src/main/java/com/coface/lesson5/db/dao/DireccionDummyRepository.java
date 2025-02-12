@@ -33,7 +33,7 @@ public class DireccionDummyRepository implements DireccionRepository {
 
     @Override
     public Long deleteDireccionPorUsuarioId(Long id) {
-        direcciones.removeIf(direccion -> direccion.getUsuario().getId() == id);
+        direcciones.removeIf(i -> i.getUsuario().getId() == id);
         return id;
     }
 }

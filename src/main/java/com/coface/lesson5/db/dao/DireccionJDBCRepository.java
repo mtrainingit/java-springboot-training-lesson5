@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 
-@Repository
 public class DireccionJDBCRepository implements DireccionRepository {
 
     private final JdbcTemplate jdbcTemplate;

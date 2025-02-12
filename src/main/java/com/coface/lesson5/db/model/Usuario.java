@@ -45,7 +45,7 @@ public class Usuario {
     @OneToMany(
             mappedBy = "usuario",
             orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY
     )
     private List<Tarea> tareas = new ArrayList<>();

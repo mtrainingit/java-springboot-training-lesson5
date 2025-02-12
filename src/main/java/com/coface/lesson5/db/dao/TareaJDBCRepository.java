@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 
-@Repository
 public class TareaJDBCRepository implements TareaRepository {
 
     private final JdbcTemplate jdbcTemplate;

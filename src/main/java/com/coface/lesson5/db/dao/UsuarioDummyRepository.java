@@ -39,21 +39,21 @@ public class UsuarioDummyRepository implements UsuarioRepository {
     @Override
     public Usuario saveUsuario(Usuario usuario) {
         if (usuario.getId() == null) {
-            direccionRepository.save(usuario.getDireccion());
+            direccionRepository.saveDireccion(usuario.getDireccion());
             Optional<Usuario> usuarioConMayorId = usuarios.stream().max((u1, u2) -> Long.compare(u1.getId(), u2.getId()));
             Long id = usuarioConMayorId.isPresent() ? usuarioConMayorId.get().getId() + 1 : 1L;
             usuario.setId(id);
             usuarios.add(usuario);
             for (Tarea tarea : usuario.getTareas()) {
-                tareaRepository.save(tarea);
+                tareaRepository.saveTarea(tarea);
             }
         }
         else {
-            direccionRepository.save(usuario.getDireccion());
+            direccionRepository.saveDireccion(usuario.getDireccion());
             Usuario usuarioToModify = usuarios.stream().filter(u -> u.getId() == usuario.getId()).findFirst().get();
             usuarioToModify = usuario;
             for (Tarea tarea : usuario.getTareas()) {
-                tareaRepository.save(tarea);
+                tareaRepository.saveTarea(tarea);
             }
         }
         return usuario;
@@ -122,6 +122,11 @@ public class UsuarioDummyRepository implements UsuarioRepository {
             usuariosPaginados = usuariosPaginados.subList(start, end);
         }
         return new PageImpl<>(usuariosPaginados, pageable, usuarios.size());
+    }
+
+    @Override
+    public List<Tarea> encontrarTareasPorUsuario(Usuario usuario) {
+        return tareaRepository.encontrarTareasPorUsuario(usuario);
     }
 
 }
