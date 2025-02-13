@@ -2,6 +2,12 @@ package com.coface.lesson5.db.dao;
 
 import com.coface.lesson5.db.model.Tarea;
 import com.coface.lesson5.db.model.Usuario;
+import com.coface.lesson5.db.model.UsuarioProjection;
+import com.coface.lesson5.db.model.UsuarioReducidoDTO;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.ParameterMode;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.StoredProcedureQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,9 +15,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import static com.fasterxml.jackson.databind.type.LogicalType.Map;
+
 public class UsuarioJPARepositoryAdapter implements UsuarioRepository {
+
+    @PersistenceContext
+    private EntityManager em;
 
     private final UsuarioJPARepository usuarioJPARepository;
 
@@ -32,7 +44,14 @@ public class UsuarioJPARepositoryAdapter implements UsuarioRepository {
     @Transactional
     @Override
     public Usuario saveUsuario(Usuario usuario) {
-        return usuarioJPARepository.save(usuario);
+        if (usuario.getId() == null) {
+            Long id = usuarioJPARepository.insertarUsuarioStoredProcedureQuery(em, usuario);
+            usuario.setId(id);
+            return usuario;
+        }
+        else {
+            return usuarioJPARepository.save(usuario);
+        }
     }
 
     @Transactional
@@ -63,5 +82,10 @@ public class UsuarioJPARepositoryAdapter implements UsuarioRepository {
     @Override
     public List<Tarea> encontrarTareasPorUsuario(Usuario usuario) {
         return usuario.getTareas();
+    }
+
+    @Override
+    public List<UsuarioReducidoDTO> getUsuariosReducidos() {
+        return usuarioJPARepository.findUsuariosReducidosJPQL();
     }
 }

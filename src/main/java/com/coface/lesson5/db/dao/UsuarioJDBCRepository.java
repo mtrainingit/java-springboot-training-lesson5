@@ -1,16 +1,21 @@
 package com.coface.lesson5.db.dao;
 
-import com.coface.lesson5.db.model.Direccion;
-import com.coface.lesson5.db.model.Tarea;
-import com.coface.lesson5.db.model.Usuario;
+import com.coface.lesson5.api.dto.UsuarioResponseDTO;
+import com.coface.lesson5.db.model.*;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.*;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class UsuarioJDBCRepository implements UsuarioRepository {
@@ -110,22 +115,16 @@ public class UsuarioJDBCRepository implements UsuarioRepository {
     @Override
     public Usuario saveUsuario(Usuario usuario) {
         if (usuario.getId() == null) {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(
-                    (i) -> {
-                        PreparedStatement ps = i.prepareStatement(
-                                "insert into usuarios (id, nombre, email, password, rol) values (usuarios_id_seq.nextval, ?, ?, ?, ?)",
-                                new String[]{"id"}
-                        );
-                        ps.setString(1, usuario.getNombre());
-                        ps.setString(2, usuario.getEmail());
-                        ps.setString(3, usuario.getPassword());
-                        ps.setInt(4, usuario.getRol());
-                        return ps;
-                    },
-                    keyHolder
-            );
-            Long id = keyHolder.getKey().longValue();
+            SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                    .withProcedureName("insertar_usuario")
+                    .declareParameters(new SqlOutParameter("p_id", Types.BIGINT));
+            Map<String, Object> parametrosDeEntrada = new HashMap<>();
+            parametrosDeEntrada.put("p_nombre", usuario.getNombre());
+            parametrosDeEntrada.put("p_email", usuario.getEmail());
+            parametrosDeEntrada.put("p_password", usuario.getPassword());
+            parametrosDeEntrada.put("p_rol", usuario.getRol());
+            Map<String, Object> parametrosDeSalida = simpleJdbcCall.execute(parametrosDeEntrada);
+            Long id = (Long) parametrosDeSalida.get("p_id");
             usuario.setId(id);
             return usuario;
         }
@@ -237,5 +236,16 @@ public class UsuarioJDBCRepository implements UsuarioRepository {
     @Override
     public List<Tarea> encontrarTareasPorUsuario(Usuario usuario) {
         return tareaRepository.encontrarTareasPorUsuario(usuario);
+    }
+
+    @Override
+    public List<UsuarioReducidoDTO> getUsuariosReducidos() {
+        return jdbcTemplate.query(
+                "select nombre, email from usuarios",
+                (result, rownum) -> new UsuarioReducidoDTO(
+                        result.getString("nombre"),
+                        result.getString("email")
+                )
+        );
     }
 }

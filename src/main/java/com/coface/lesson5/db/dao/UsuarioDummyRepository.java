@@ -2,6 +2,7 @@ package com.coface.lesson5.db.dao;
 
 import com.coface.lesson5.db.model.Tarea;
 import com.coface.lesson5.db.model.Usuario;
+import com.coface.lesson5.db.model.UsuarioReducidoDTO;
 import com.coface.lesson5.exception.CampoOrdenDesconocido;
 import org.springframework.data.domain.*;
 
@@ -127,6 +128,14 @@ public class UsuarioDummyRepository implements UsuarioRepository {
     @Override
     public List<Tarea> encontrarTareasPorUsuario(Usuario usuario) {
         return tareaRepository.encontrarTareasPorUsuario(usuario);
+    }
+
+    @Override
+    public List<UsuarioReducidoDTO> getUsuariosReducidos() {
+        return usuarios.stream().map(i -> new UsuarioReducidoDTO(
+                i.getNombre(),
+                i.getEmail()
+        )).collect(Collectors.toList());
     }
 
 }

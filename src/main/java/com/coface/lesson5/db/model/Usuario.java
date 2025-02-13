@@ -37,7 +37,7 @@ public class Usuario {
     @OneToOne(
             mappedBy = "usuario",
             orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            cascade = CascadeType.ALL,
             fetch = FetchType.EAGER
     )
     private Direccion direccion;

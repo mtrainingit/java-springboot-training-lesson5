@@ -1,11 +1,13 @@
 package com.coface.lesson5.service;
 
 import com.coface.lesson5.api.dto.UsuarioCreateRequestDTO;
+import com.coface.lesson5.api.dto.UsuarioResponseDTO;
 import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
 import com.coface.lesson5.db.dao.UsuarioRepository;
 import com.coface.lesson5.db.model.Direccion;
 import com.coface.lesson5.db.model.Tarea;
 import com.coface.lesson5.db.model.Usuario;
+import com.coface.lesson5.db.model.UsuarioReducidoDTO;
 import com.coface.lesson5.exception.ConflictoCampoUnicoException;
 import com.coface.lesson5.exception.RecursoNoEncontradoException;
 import jakarta.transaction.Transactional;
@@ -99,5 +101,9 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.getUsuarioPorId(id).orElseThrow(() -> new RecursoNoEncontradoException("No se pudo encontrar un usuario con id " + id));
         usuario.setTareas(usuarioRepository.encontrarTareasPorUsuario(usuario));
         return usuario;
+    }
+
+    public List<UsuarioReducidoDTO> getUsuariosReducidos() {
+        return usuarioRepository.getUsuariosReducidos();
     }
 }

@@ -1,6 +1,7 @@
 package com.coface.lesson5.api.controller;
 
 import com.coface.lesson5.db.model.Tarea;
+import com.coface.lesson5.db.model.UsuarioReducidoDTO;
 import com.coface.lesson5.mapper.UsuarioAUsuarioResponseDTOMapper;
 import com.coface.lesson5.api.dto.UsuarioCreateRequestDTO;
 import com.coface.lesson5.api.dto.UsuarioResponseDTO;
@@ -70,5 +71,10 @@ public class UsuarioController {
     @GetMapping("{id}/tarea")
     public UsuarioResponseDTO getTareasDeUsuario(@PathVariable Long id) {
         return usuarioResponseDTOMapper.apply(usuarioService.getTareasDeUsuario(id));
+    }
+
+    @GetMapping("reducido")
+    public List<UsuarioReducidoDTO> getUsuariosReducidos() {
+        return usuarioService.getUsuariosReducidos();
     }
 }
