@@ -2,9 +2,7 @@ package com.coface.lesson5.db.dao;
 
 import com.coface.lesson5.db.model.Usuario;
 import com.coface.lesson5.db.model.UsuarioReducidoDTO;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.ParameterMode;
-import jakarta.persistence.StoredProcedureQuery;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
@@ -31,10 +29,29 @@ public interface UsuarioJPARepository extends JpaRepository<Usuario, Long> {
      *     2 - la función tiene el mismo nombre del stored procedure al que se llama
      * )
      */
+    @Transactional
     @Procedure(
-            name = "insertar_usuario"
+            procedureName = "insertar_usuario"
     )
-    Long insertar_usuario(
+    Long insertarUsuario(
+            @Param("p_nombre") String nombre,
+            @Param("p_email") String email,
+            @Param("p_password") String password,
+            @Param("p_rol") Integer rol
+    );
+
+    /*
+     * funcional
+     * (si
+     *     1 - cumplen las condiciones del anterior ejemplo
+     *     2 - necesita más control en el mapping
+     * )
+     */
+    @Transactional
+    @Procedure(
+            name = "Usuario.insertarUsuarioNamedQuery"
+    )
+    Long insertarUsuarioNamedQuery(
             @Param("p_nombre") String nombre,
             @Param("p_email") String email,
             @Param("p_password") String password,
@@ -45,6 +62,7 @@ public interface UsuarioJPARepository extends JpaRepository<Usuario, Long> {
      * funcional
      * (pero no apto para traer el parámetro de salida de vuelta)
      */
+    @Transactional
     @Query(
             value = "call insertar_usuario(:p_nombre, :p_email, :p_password, :p_rol, :p_id)",
             nativeQuery = true
@@ -57,21 +75,4 @@ public interface UsuarioJPARepository extends JpaRepository<Usuario, Long> {
             @Param("p_id") Long id
     );
 
-    default Long insertarUsuarioStoredProcedureQuery(EntityManager em, Usuario usuario) {
-        StoredProcedureQuery query = em.createStoredProcedureQuery("insertar_usuario");
-        query.registerStoredProcedureParameter("p_nombre", String.class, ParameterMode.IN);
-        query.registerStoredProcedureParameter("p_email", String.class, ParameterMode.IN);
-        query.registerStoredProcedureParameter("p_password", String.class, ParameterMode.IN);
-        query.registerStoredProcedureParameter("p_rol", Integer.class, ParameterMode.IN);
-        query.registerStoredProcedureParameter("p_id", Long.class, ParameterMode.OUT);
-
-        query.setParameter("p_nombre", usuario.getNombre());
-        query.setParameter("p_email", usuario.getEmail());
-        query.setParameter("p_password", usuario.getPassword());
-        query.setParameter("p_rol", usuario.getRol());
-
-        query.execute();
-
-        return (Long) query.getOutputParameterValue("p_id");
-    }
 }

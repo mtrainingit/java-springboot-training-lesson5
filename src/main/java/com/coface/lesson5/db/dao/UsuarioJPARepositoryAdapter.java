@@ -45,7 +45,7 @@ public class UsuarioJPARepositoryAdapter implements UsuarioRepository {
     @Override
     public Usuario saveUsuario(Usuario usuario) {
         if (usuario.getId() == null) {
-            Long id = usuarioJPARepository.insertarUsuarioStoredProcedureQuery(em, usuario);
+            Long id = insertarUsuarioStoredProcedureQuery(usuario);
             usuario.setId(id);
             return usuario;
         }
@@ -87,5 +87,24 @@ public class UsuarioJPARepositoryAdapter implements UsuarioRepository {
     @Override
     public List<UsuarioReducidoDTO> getUsuariosReducidos() {
         return usuarioJPARepository.findUsuariosReducidosJPQL();
+    }
+
+    @Transactional
+    Long insertarUsuarioStoredProcedureQuery(Usuario usuario) {
+        StoredProcedureQuery query = em.createStoredProcedureQuery("insertar_usuario");
+        query.registerStoredProcedureParameter("p_nombre", String.class, ParameterMode.IN);
+        query.registerStoredProcedureParameter("p_email", String.class, ParameterMode.IN);
+        query.registerStoredProcedureParameter("p_password", String.class, ParameterMode.IN);
+        query.registerStoredProcedureParameter("p_rol", Integer.class, ParameterMode.IN);
+        query.registerStoredProcedureParameter("p_id", Long.class, ParameterMode.OUT);
+
+        query.setParameter("p_nombre", usuario.getNombre());
+        query.setParameter("p_email", usuario.getEmail());
+        query.setParameter("p_password", usuario.getPassword());
+        query.setParameter("p_rol", usuario.getRol());
+
+        query.execute();
+
+        return (Long) query.getOutputParameterValue("p_id");
     }
 }

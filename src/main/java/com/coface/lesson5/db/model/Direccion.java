@@ -5,7 +5,13 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(
-        name = "direcciones"
+        name = "direcciones",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "direcciones_usuario_id_unique",
+                        columnNames = "usuario_id"
+                )
+        }
 )
 public class Direccion {
 

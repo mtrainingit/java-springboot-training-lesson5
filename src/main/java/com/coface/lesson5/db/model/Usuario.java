@@ -6,6 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@NamedStoredProcedureQuery
+(
+        name = "Usuario.insertarUsuarioNamedQuery",
+        procedureName = "insertar_usuario",
+        parameters = {
+                @StoredProcedureParameter(name = "p_nombre", mode = ParameterMode.IN, type = String.class),
+                @StoredProcedureParameter(name = "p_email", mode = ParameterMode.IN, type = String.class),
+                @StoredProcedureParameter(name = "p_password", mode = ParameterMode.IN, type = String.class),
+                @StoredProcedureParameter(name = "p_rol", mode = ParameterMode.IN, type = Integer.class),
+                @StoredProcedureParameter(name = "p_id", mode = ParameterMode.OUT, type = Long.class)
+        },
+        resultClasses = Long.class
+)
 @Table(
         name = "usuarios",
         uniqueConstraints = {
