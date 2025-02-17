@@ -13,6 +13,7 @@ import com.coface.lesson5.exception.RecursoNoEncontradoException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,10 @@ public class UsuarioService {
 
     public Usuario getUsuarioPorId(Long id) {
         return usuarioRepository.getUsuarioPorId(id).orElseThrow(() -> new RecursoNoEncontradoException("No se pudo encontrar un usuario con el id " + id));
+    }
+
+    public Usuario getUsuarioPorEmail(String email) {
+        return usuarioRepository.getUsuarioPorEmail(email).orElseThrow(() -> new RecursoNoEncontradoException("No se pudo encontrar un usuario con el email " + email));
     }
 
     @Transactional

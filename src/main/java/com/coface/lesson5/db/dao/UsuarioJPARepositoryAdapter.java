@@ -72,6 +72,11 @@ public class UsuarioJPARepositoryAdapter implements UsuarioRepository {
     }
 
     @Override
+    public Optional<Usuario> getUsuarioPorEmail(String email) {
+        return usuarioJPARepository.findByEmail(email);
+    }
+
+    @Override
     public Page<Usuario> getUsuariosPaginados(int pagina, int tamano, String ordPor, String dirOrd) {
         Sort sort = dirOrd.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(ordPor).ascending() : Sort.by(ordPor).descending();
         Pageable pageable = PageRequest.of(pagina, tamano, sort);

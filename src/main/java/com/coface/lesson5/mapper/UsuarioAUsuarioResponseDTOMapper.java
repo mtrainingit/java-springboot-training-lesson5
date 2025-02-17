@@ -5,6 +5,7 @@ import com.coface.lesson5.api.dto.UsuarioResponseDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class UsuarioAUsuarioResponseDTOMapper implements Function<Usuario, UsuarioResponseDTO> {
@@ -15,7 +16,7 @@ public class UsuarioAUsuarioResponseDTOMapper implements Function<Usuario, Usuar
                 usuario.getId(),
                 usuario.getNombre(),
                 usuario.getEmail(),
-                usuario.getRol() == 1 ? "ROLE_ADMIN" : "ROLE_USER",
+                usuario.getAuthorities().stream().map(i -> i.getAuthority()).collect(Collectors.toList()),
                 usuario.getDireccion(),
                 usuario.getTareas()
         );

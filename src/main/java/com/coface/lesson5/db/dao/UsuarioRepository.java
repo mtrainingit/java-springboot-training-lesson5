@@ -17,6 +17,7 @@ public interface UsuarioRepository {
     Long deleteUsuario(Long id);
     boolean existeUsuarioPorId(Long id);
     boolean existeUsuarioPorEmail(String email);
+    Optional<Usuario> getUsuarioPorEmail(String email);
     Page<Usuario> getUsuariosPaginados(int pagina, int tamano, String ordPor, String dirOrd);
     List<Tarea> encontrarTareasPorUsuario(Usuario usuario);
     List<UsuarioReducidoDTO> getUsuariosReducidos();

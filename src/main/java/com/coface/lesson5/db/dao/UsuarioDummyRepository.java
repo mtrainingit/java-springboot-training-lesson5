@@ -77,6 +77,11 @@ public class UsuarioDummyRepository implements UsuarioRepository {
     }
 
     @Override
+    public Optional<Usuario> getUsuarioPorEmail(String email) {
+        return usuarios.stream().filter(u -> u.getEmail().equals(email)).findFirst();
+    }
+
+    @Override
     public Page<Usuario> getUsuariosPaginados(int pagina, int tamano, String ordPor, String dirOrd) {
         Sort sort;
         if (dirOrd.equalsIgnoreCase(Sort.Direction.ASC.name())) {

@@ -4,6 +4,7 @@ import com.coface.lesson5.db.dao.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.Md4PasswordEncoder;
@@ -61,15 +62,4 @@ public class UsuarioConfig {
         return new UsuarioJPARepositoryAdapter(usuarioJPARepository);
     }
 
-    @Bean
-    @Qualifier("bcrypt")
-    public PasswordEncoder getPasswordBCryptEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    @Qualifier("md4")
-    public PasswordEncoder getPasswordEncoder() {
-        return new Md4PasswordEncoder();
-    }
 }

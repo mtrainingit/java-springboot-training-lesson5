@@ -9,7 +9,7 @@ public record UsuarioResponseDTO(
         Long id,
         String nombre,
         String email,
-        String rol,
+        List<String> roles,
         Direccion direccion,
         List<Tarea> tareas
 ) {
