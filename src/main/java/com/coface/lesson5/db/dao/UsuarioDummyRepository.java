@@ -138,4 +138,9 @@ public class UsuarioDummyRepository implements UsuarioRepository {
         )).collect(Collectors.toList());
     }
 
+    @Override
+    public Optional<Usuario> getUsuarioPorEmail(String email) {
+        return usuarios.stream().filter(u -> u.getEmail().equals(email)).findFirst();
+    }
+
 }

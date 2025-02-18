@@ -248,4 +248,45 @@ public class UsuarioJDBCRepository implements UsuarioRepository {
                 )
         );
     }
+
+    @Override
+    public Optional<Usuario> getUsuarioPorEmail(String email) {
+        Optional<Usuario> usuario;
+        try {
+            usuario = Optional.ofNullable(jdbcTemplate.queryForObject(
+                    "select * from usuarios where email = ?",
+                    (result, rownum) -> new Usuario(
+                            result.getLong("id"),
+                            result.getString("nombre"),
+                            result.getString("email"),
+                            result.getString("password"),
+                            result.getInt("rol")
+                    ),
+                    email
+            ));
+        }
+        catch (Exception e) {
+            usuario = Optional.empty();
+        }
+        usuario.ifPresent(i -> {
+            Direccion direccion;
+            try {
+                direccion = jdbcTemplate.queryForObject(
+                        "select * from direcciones where usuario_id = ?",
+                        (result, rownum) -> new Direccion(
+                                result.getLong("id"),
+                                result.getString("direccion"),
+                                result.getString("codigo_postal"),
+                                i
+                        ),
+                        i.getId()
+                );
+            }
+            catch (Exception excepcion) {
+                direccion = null;
+            }
+            i.setDireccion(direccion);
+        });
+        return usuario;
+    }
 }

@@ -9,11 +9,12 @@ import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UsuarioJPARepository extends JpaRepository<Usuario, Long> {
 
     boolean existsByEmail(String email);
-
+    Optional<Usuario> findByEmail(String email);
     // JPQL
     @Query("select new com.coface.lesson5.db.model.UsuarioReducidoDTO(u.nombre, u.email) from Usuario u")
     List<UsuarioReducidoDTO> findUsuariosReducidosJPQL();

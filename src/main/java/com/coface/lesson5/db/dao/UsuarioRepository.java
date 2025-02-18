@@ -20,4 +20,5 @@ public interface UsuarioRepository {
     Page<Usuario> getUsuariosPaginados(int pagina, int tamano, String ordPor, String dirOrd);
     List<Tarea> encontrarTareasPorUsuario(Usuario usuario);
     List<UsuarioReducidoDTO> getUsuariosReducidos();
+    Optional<Usuario> getUsuarioPorEmail(String email);
 }

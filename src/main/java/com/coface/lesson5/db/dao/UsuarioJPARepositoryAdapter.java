@@ -89,6 +89,11 @@ public class UsuarioJPARepositoryAdapter implements UsuarioRepository {
         return usuarioJPARepository.findUsuariosReducidosJPQL();
     }
 
+    @Override
+    public Optional<Usuario> getUsuarioPorEmail(String email) {
+        return usuarioJPARepository.findByEmail(email);
+    }
+
     @Transactional
     Long insertarUsuarioStoredProcedureQuery(Usuario usuario) {
         StoredProcedureQuery query = em.createStoredProcedureQuery("insertar_usuario");
