@@ -11,7 +11,6 @@ public class AutenticacionService {
 
     private final AuthenticationManager authenticationManager;
 
-
     public AutenticacionService(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }

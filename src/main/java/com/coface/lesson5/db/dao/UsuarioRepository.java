@@ -2,7 +2,6 @@ package com.coface.lesson5.db.dao;
 
 import com.coface.lesson5.db.model.Tarea;
 import com.coface.lesson5.db.model.Usuario;
-import com.coface.lesson5.db.model.UsuarioProjection;
 import com.coface.lesson5.db.model.UsuarioReducidoDTO;
 import org.springframework.data.domain.Page;
 

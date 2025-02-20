@@ -2,7 +2,6 @@ package com.coface.lesson5.db.dao;
 
 import com.coface.lesson5.db.model.Tarea;
 import com.coface.lesson5.db.model.Usuario;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,17 +1,12 @@
 package com.coface.lesson5.db.dao;
 
-import com.coface.lesson5.api.dto.UsuarioResponseDTO;
 import com.coface.lesson5.db.model.*;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.List;

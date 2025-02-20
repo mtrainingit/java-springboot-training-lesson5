@@ -7,6 +7,8 @@ import com.coface.lesson5.api.dto.UsuarioCreateRequestDTO;
 import com.coface.lesson5.api.dto.UsuarioResponseDTO;
 import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
 import com.coface.lesson5.service.UsuarioService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,8 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
     private final UsuarioAUsuarioResponseDTOMapper usuarioResponseDTOMapper;
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
+
 
     public UsuarioController(UsuarioService usuarioService, UsuarioAUsuarioResponseDTOMapper usuarioResponseDTOMapper) {
         this.usuarioService = usuarioService;
@@ -29,26 +33,31 @@ public class UsuarioController {
 
     @GetMapping()
     public List<UsuarioResponseDTO> getUsuarios() {
+        logger.info("Obteniendo lista de usuarios");
         return usuarioService.getUsuarios().stream().map(usuarioResponseDTOMapper).collect(Collectors.toList());
     }
 
     @GetMapping("{id}")
     public UsuarioResponseDTO getUsuarioPorId(@PathVariable Long id) {
+        logger.info("Obteniendo usuario por id");
         return usuarioResponseDTOMapper.apply(usuarioService.getUsuarioPorId(id));
     }
 
     @PostMapping
     public ResponseEntity<Long> postUsuario(@RequestBody UsuarioCreateRequestDTO usuarioCreateRequestDTO) {
+        logger.info("Creando usuario");
         return new ResponseEntity<>(usuarioService.crearUsusario(usuarioCreateRequestDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("{id}")
     public ResponseEntity<Long> updateUsuario(@PathVariable Long id, @RequestBody UsuarioUpdateRequestDTO usuarioUpdateRequestDTO) {
+        logger.info("Actualizando usuario");
         return new ResponseEntity<>(usuarioService.actualizarUsuario(id, usuarioUpdateRequestDTO), HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<Long> deleteUsuario(@PathVariable Long id) {
+        logger.info("Eliminando usuario");
         return new ResponseEntity<>(usuarioService.eliminarUsuario(id), HttpStatus.OK);
     }
 
@@ -59,22 +68,26 @@ public class UsuarioController {
             @RequestParam(defaultValue = "nombre") String ordPor,
             @RequestParam(defaultValue = "asc") String dirOrd
     ) {
+        logger.info("Obteniendo lista de usuarios paginados");
         return new PagedModel<>(usuarioService.getUsuariosPaginados(pagina, tamano, ordPor, dirOrd).map(usuarioResponseDTOMapper));
     }
 
     @PutMapping("{id}/tarea")
     public Long asignarTarea(@PathVariable Long id, @RequestBody Tarea tarea) {
+        logger.info("Asignando tarea a usuario");
         usuarioService.asignarTarea(id, tarea);
         return id;
     }
 
     @GetMapping("{id}/tarea")
     public UsuarioResponseDTO getTareasDeUsuario(@PathVariable Long id) {
+        logger.info("Obteniendo usuario con lista de tareas");
         return usuarioResponseDTOMapper.apply(usuarioService.getTareasDeUsuario(id));
     }
 
     @GetMapping("reducido")
     public List<UsuarioReducidoDTO> getUsuariosReducidos() {
+        logger.info("Obteniendo lista de usuarios reducidos");
         return usuarioService.getUsuariosReducidos();
     }
 }

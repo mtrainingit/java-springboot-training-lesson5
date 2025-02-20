@@ -16,6 +16,10 @@ public class UsuarioDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return usuarioService.getUsuarioPorEmail(username);
+        try {
+            return usuarioService.getUsuarioPorEmail(username);
+        } catch (Exception e) {
+            throw new UsernameNotFoundException("Bad credentials");
+        }
     }
 }

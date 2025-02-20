@@ -2,11 +2,9 @@ package com.coface.lesson5.db.dao;
 
 import com.coface.lesson5.db.model.Tarea;
 import com.coface.lesson5.db.model.Usuario;
-import jakarta.transaction.Transactional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;

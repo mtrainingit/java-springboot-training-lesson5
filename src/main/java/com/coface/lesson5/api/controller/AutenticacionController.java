@@ -1,7 +1,6 @@
 package com.coface.lesson5.api.controller;
 
 import com.coface.lesson5.api.dto.LoginDTO;
-import com.coface.lesson5.api.dto.UsuarioResponseDTO;
 import com.coface.lesson5.db.model.Usuario;
 import com.coface.lesson5.service.AutenticacionService;
 import com.coface.lesson5.utils.JWTUtility;

@@ -2,7 +2,6 @@ package com.coface.lesson5.db.dao;
 
 import com.coface.lesson5.db.model.Tarea;
 import com.coface.lesson5.db.model.Usuario;
-import com.coface.lesson5.db.model.UsuarioProjection;
 import com.coface.lesson5.db.model.UsuarioReducidoDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.ParameterMode;
@@ -15,10 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-
-import static com.fasterxml.jackson.databind.type.LogicalType.Map;
 
 public class UsuarioJPARepositoryAdapter implements UsuarioRepository {
 

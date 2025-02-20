@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -23,7 +24,11 @@ public class CadenaDeFiltrosConfig {
     }
 
     @Bean
-    public SecurityFilterChain cadenaDeFiltros(HttpSecurity http, AutenticacionJWTFilter autenticacionJWTFilter) throws Exception {
+    public SecurityFilterChain cadenaDeFiltros(
+            HttpSecurity http,
+            AutenticacionJWTFilter autenticacionJWTFilter,
+            AuthenticationEntryPoint authenticationEntryPoint
+    ) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
@@ -54,6 +59,12 @@ public class CadenaDeFiltrosConfig {
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated()
+                )
+                .exceptionHandling(
+                        customizer ->
+                                customizer.authenticationEntryPoint(
+                                        authenticationEntryPoint
+                                )
                 )
                 .build();
     }

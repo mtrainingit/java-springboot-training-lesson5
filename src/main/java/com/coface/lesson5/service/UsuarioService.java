@@ -1,7 +1,7 @@
 package com.coface.lesson5.service;
 
+import com.coface.lesson5.api.dto.NotificacionCreateRequestDTO;
 import com.coface.lesson5.api.dto.UsuarioCreateRequestDTO;
-import com.coface.lesson5.api.dto.UsuarioResponseDTO;
 import com.coface.lesson5.api.dto.UsuarioUpdateRequestDTO;
 import com.coface.lesson5.db.dao.UsuarioRepository;
 import com.coface.lesson5.db.model.Direccion;
@@ -11,12 +11,13 @@ import com.coface.lesson5.db.model.UsuarioReducidoDTO;
 import com.coface.lesson5.exception.ConflictoCampoUnicoException;
 import com.coface.lesson5.exception.RecursoNoEncontradoException;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
@@ -27,12 +28,18 @@ public class UsuarioService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final WebClient.Builder webClientBuilder;
+
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
+
     public UsuarioService(
-            @Qualifier("usuario-jpa") UsuarioRepository usuarioRepository,
-            @Qualifier("bcrypt") PasswordEncoder passwordEncoder
+            @Qualifier("usuario-jdbc") UsuarioRepository usuarioRepository,
+            @Qualifier("bcrypt") PasswordEncoder passwordEncoder,
+            WebClient.Builder webClientBuilder
     ) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.webClientBuilder = webClientBuilder;
     }
 
     public List<Usuario> getUsuarios() {
@@ -61,6 +68,15 @@ public class UsuarioService {
                 usuario
         ));
         usuarioRepository.saveUsuario(usuario);
+        webClientBuilder.baseUrl("http://localhost:8081").build().post()
+                .uri("/api/v1/notificacion")
+                .bodyValue(new NotificacionCreateRequestDTO(
+                        usuario.getId(),
+                        usuario.getUsername()
+                ))
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
         return usuario.getId();
     }
 
